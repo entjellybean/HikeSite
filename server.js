@@ -29,47 +29,57 @@ db.serialize(() => {
   `);
 });
 
-
 app.post("/login", (req, res) => {
-  const { username, password } = req.body;
+  const { username, password, isNewUser } = req.body;
 
   if (!username || !password) {
-    return res.status(400).json({ message: "missing info" });
+    return res.status(400).json({ message: "Kullanıcı adı ve şifre gerekli." });
   }
 
   db.get("SELECT * FROM username WHERE name = ?", [username], (err, user) => {
     if (err) {
       console.error("DB hatası:", err);
-      return res.status(500).json({ message: "server error" });
+      return res.status(500).json({ message: "Sunucu hatası" });
     }
 
-    if (!user) {
+    // ✅ Kayıt modu
+    if (isNewUser) {
+      if (user) {
+        return res.status(409).json({ message: "Bu kullanıcı adı zaten var." });
+      }
+
       hashPassword(password).then((hashed) => {
         db.run(
           "INSERT INTO username (name, password) VALUES (?, ?)",
           [username, hashed],
           (err) => {
             if (err) {
-              console.error("signup error", err);
-              return res.status(500).json({ message: "sign up error" });
+              console.error("Kayıt hatası:", err);
+              return res.status(500).json({ message: "Kayıt başarısız" });
             }
             req.session.username = username;
-            res.status(200).json({ message: "new user" });
+            return res.status(200).json({ message: "Kayıt başarılı" });
           }
         );
       });
       return;
     }
 
+    // ✅ Giriş modu
+    if (!user) {
+      return res.status(401).json({ message: "Böyle bir kullanıcı yok." });
+    }
+
     comparePassword(password, user.password).then((isValid) => {
       if (!isValid) {
-        return res.status(401).json({ message: "password error" });
+        return res.status(401).json({ message: "Şifre yanlış" });
       }
       req.session.username = username;
-      res.status(200).json({ message: "okay" });
+      res.status(200).json({ message: "Giriş başarılı" });
     });
   });
 });
+
 app.get("/me", (req, res) => {
   if (req.session && req.session.username) {
     res.json({ username: req.session.username });
