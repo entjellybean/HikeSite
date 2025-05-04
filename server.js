@@ -27,6 +27,20 @@ db.serialize(() => {
       password TEXT NOT NULL
     )
   `);
+  db.run(`
+    CREATE TABLE IF NOT EXISTS trails (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      title TEXT NOT NULL,
+      description TEXT NOT NULL,
+      difficulty TEXT NOT NULL,
+      location TEXT NOT NULL,
+      startingPoint TEXT NOT NULL,
+      image TEXT NOT NULL,
+      user TEXT NOT NULL
+    )
+  `);
+  
+  
 });
 
 app.post("/login", (req, res) => {
@@ -85,6 +99,34 @@ app.get("/me", (req, res) => {
     res.status(401).json({ message: "Not logged in" });
   }
 });
+app.post("/submit-trail", (req, res) => {
+  const { title, description, difficulty, startingPoint, location, image } = req.body;
+
+  if (!req.session.username) {
+    return res.status(401).json({ message: "Oturum açılmamış." });
+  }
+
+  if (!title || !description || !difficulty || !startingPoint || !image) {
+    return res.status(400).json({ message: "Eksik bilgi." });
+  }
+
+  const user = req.session.username;
+
+  db.run(
+    "INSERT INTO trails (title, description, difficulty, startingPoint, location, image, user) VALUES (?, ?, ?, ?, ?, ?, ?)",
+    [title, description, difficulty, startingPoint, location, image, user],
+    (err) => {
+      if (err) {
+        console.error("Veri kaydetme hatası:", err);
+        return res.status(500).json({ message: "Sunucu hatası." });
+      }
+
+      res.status(200).json({ message: "Rota başarıyla kaydedildi." });
+    }
+  );
+});
+
+
 
 
 const PORT = process.env.PORT || 8080;
