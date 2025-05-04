@@ -4,8 +4,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
-    errorDiv.textContent = ""; // önceki hatayı temizle
+    errorDiv.textContent = ""; 
 
+
+    
     const username = form.elements.username.value;
     const password = form.elements.password.value;
     const isNewUser = form.elements["new-user"].checked;
@@ -25,8 +27,8 @@ document.addEventListener("DOMContentLoaded", () => {
         errorDiv.textContent = result.message;
       }
     } catch (err) {
-      console.error("İstek hatası:", err);
-      errorDiv.textContent = "Sunucuya bağlanılamadı!";
+      console.error("error", err);
+      errorDiv.textContent = "Server not connected";
     }
   });
 });

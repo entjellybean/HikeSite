@@ -33,19 +33,18 @@ app.post("/login", (req, res) => {
   const { username, password, isNewUser } = req.body;
 
   if (!username || !password) {
-    return res.status(400).json({ message: "Kullanıcı adı ve şifre gerekli." });
+    return res.status(400).json({ message: "enter username and password CORRECTLY." });
   }
 
   db.get("SELECT * FROM username WHERE name = ?", [username], (err, user) => {
     if (err) {
       console.error("DB hatası:", err);
-      return res.status(500).json({ message: "Sunucu hatası" });
+      return res.status(500).json({ message: "Server error" });
     }
 
-    // ✅ Kayıt modu
     if (isNewUser) {
       if (user) {
-        return res.status(409).json({ message: "Bu kullanıcı adı zaten var." });
+        return res.status(409).json({ message: "user already exists." });
       }
 
       hashPassword(password).then((hashed) => {
@@ -55,27 +54,26 @@ app.post("/login", (req, res) => {
           (err) => {
             if (err) {
               console.error("Kayıt hatası:", err);
-              return res.status(500).json({ message: "Kayıt başarısız" });
+              return res.status(500).json({ message: "error" });
             }
             req.session.username = username;
-            return res.status(200).json({ message: "Kayıt başarılı" });
+            return res.status(200).json({ message: "succes" });
           }
         );
       });
       return;
     }
 
-    // ✅ Giriş modu
     if (!user) {
-      return res.status(401).json({ message: "Böyle bir kullanıcı yok." });
+      return res.status(401).json({ message: "user not found." });
     }
 
     comparePassword(password, user.password).then((isValid) => {
       if (!isValid) {
-        return res.status(401).json({ message: "Şifre yanlış" });
+        return res.status(401).json({ message: "password error" });
       }
       req.session.username = username;
-      res.status(200).json({ message: "Giriş başarılı" });
+      res.status(200).json({ message: "succes" });
     });
   });
 });
