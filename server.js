@@ -1,14 +1,27 @@
 const express = require("express");
 const app = express();
+const multer = require("multer");
 
 const path = require("path");
 const session = require("express-session");
 const sqlite3 = require("sqlite3").verbose();
 const { hashPassword, comparePassword } = require("./lib/hash-password");
 
-const db = new sqlite3.Database("./sqlite/username.db");
+const db = new sqlite3.Database("./sqlite/database.db");
 
 // Middleware
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "uploads/"); 
+  },
+  filename: function (req, file, cb) {
+    const ext = path.extname(file.originalname);
+    cb(null, Date.now() + ext);
+  }
+});
+
+const upload = multer({ storage });
+
 app.use(express.json());
 app.use(express.static(path.join(__dirname)));
 app.use(
@@ -18,6 +31,9 @@ app.use(
     saveUninitialized: false,
   })
 );
+app.use(express.static(path.join(__dirname, "public")));
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
 
 db.serialize(() => {
   db.run(`
@@ -111,16 +127,17 @@ app.get("/me", (req, res) => {
     res.status(401).json({ message: "Not logged in" });
   }
 });
-app.post("/submit-trail", (req, res) => {
-  const { title, description, difficulty, startingPoint, location, distance, image } = req.body;
+app.post("/submit-trail", upload.single("image"), (req, res) => {
+  const { title, description, difficulty, startingPoint, location, distance } = req.body;
 
   if (!req.session.username) {
     return res.status(401).json({ message: "not logged in" });
   }
 
-  if (!title || !description || !difficulty || !startingPoint || !image) {
+  if (!title || !description || !difficulty || !startingPoint) {
     return res.status(400).json({ message: "PLEASE enter all" });
   }
+  const image = req.file ? `/uploads/${req.file.filename}` : "https://via.placeholder.com/300x200";
 
   const user = req.session.username;
 
@@ -139,15 +156,35 @@ app.post("/submit-trail", (req, res) => {
     }
   );
 });
+
+
+
 app.get("/trails", (req, res) => {
-  db.all(`
+  const { sort, search } = req.query;
+
+  let query = `
     SELECT 
       trails.*, 
       ROUND(AVG(ratings.rating), 1) AS avgRating 
     FROM trails
     LEFT JOIN ratings ON trails.id = ratings.trail_id
-    GROUP BY trails.id
-  `, (err, rows) => {
+  `;
+  const params = [];
+
+  if (search) {
+    query += " WHERE trails.title LIKE ?";
+    params.push(`%${search}%`);
+  }
+
+  query += " GROUP BY trails.id";
+
+  if (sort === "title_asc") {
+    query += " ORDER BY trails.title ASC";
+  } else if (sort === "title_desc") {
+    query += " ORDER BY trails.title DESC";
+  }
+
+  db.all(query, params, (err, rows) => {
     if (err) {
       console.error("data error:", err);
       return res.status(500).json({ message: "Server error" });
@@ -155,6 +192,8 @@ app.get("/trails", (req, res) => {
     res.json(rows);
   });
 });
+
+  
 
 app.get("/trail/:id", (req, res) => {
   const id = req.params.id;

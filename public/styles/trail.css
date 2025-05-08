@@ -1,0 +1,70 @@
+
+  .trail-card {
+    background: white;
+    overflow: hidden;
+    max-width: 80%;
+    text-align: left;
+    margin:auto;
+  }
+  
+  .trail-card img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+  }
+  
+  .trail-content {
+    padding: 20px;
+    display:grid;
+    gap:1rem;
+  }
+  .trail-content p{
+    font-size: 110%;
+  }
+  
+  .trail-content h3 {
+    margin: 0 0 20px;
+  }
+  
+  .badge {
+    font-size: 12px;
+    padding: 2px 8px;
+    border-radius: 20px;
+    margin-left: 10px;
+    vertical-align: middle;
+  }
+  #rating-form{
+    text-align: center;
+  }
+  
+  .badge.easy {
+    background-color: #4CAF50; 
+  }
+  
+  .badge.moderate, .badge.medium {
+    background-color: #FF9800; 
+  }
+  
+  .badge.hard {
+    background-color: #F44336; 
+  }
+  .location {
+    color: gray;
+    font-size: 14px;
+    margin-bottom: 10px;
+  }
+  
+  .trail-content a {
+    display: inline-block;
+    margin-top: 15px;
+    color: #2e7d32;
+    font-weight: bold;
+    text-decoration: none;
+  }
+  
+  .trail-content a:hover {
+    text-decoration: underline;
+  }
+  h2{
+    font-size: 210%;
+  }
