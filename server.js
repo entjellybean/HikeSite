@@ -144,17 +144,27 @@ app.post("/submit-trail", upload.single("image"), (req, res) => {
   db.run(
     "INSERT INTO trails (title, description, difficulty, startingPoint, location, distance, image, user) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
     [title, description, difficulty, startingPoint, location, distance, image, user],
-  
-  
-    (err) => {
-      if (err) {
-        console.error("data error", err);
-        return res.status(500).json({ message: "Server error." });
-      }
+    function (err) {
 
-      res.status(200).json({ message: "trail uploaded succesfully" });
+  
+    if (err) {
+      console.error("data error", err);
+      return res.status(500).json({ message: "Server error." });
     }
-  );
+
+    res.status(200).json({ message: "trail uploaded succesfully", id: this.lastID });
+  }
+);
+});
+
+app.post("/logout", (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      return res.status(500).json({ message: "Logout failed" });
+    }
+    res.clearCookie("connect.sid");
+    res.status(200).json({ message: "Logged out" });
+  });
 });
 
 

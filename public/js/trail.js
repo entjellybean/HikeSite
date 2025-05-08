@@ -17,14 +17,14 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const detailHtml = `
       <section class="trail-card detail-view">
-        <img src="${currentTrail.image}" alt="${currentTrail.title}">
+        <img class="trail-image" src="${currentTrail.image}" alt="${currentTrail.title}">
         <div class="trail-content">
           <h2>${currentTrail.title}   <span class="badge ${currentTrail.difficulty.toLowerCase()}">${currentTrail.difficulty}</span>
 </h2>
           <p><strong>Location:</strong> ${currentTrail.location}</p>
-          <p><strong>Starting Point:</strong> ${currentTrail.startingPoint}</p>
-          <p><strong>Distance:</strong> ${currentTrail.distance} miles</p>
-          <p>${currentTrail.description}</p>
+          <p class="trail-start"><strong>Starting Point:</strong> ${currentTrail.startingPoint}</p>
+          <p class="trail-distance"><strong>Distance:</strong> ${currentTrail.distance} miles</p>
+          <p class="trail-description">${currentTrail.description}</p>
           <p><strong>Rating:</strong> ⭐ ${currentTrail.avgRating}</p>
           <p><em>Contributed by: ${currentTrail.user}</em></p>
         </div>

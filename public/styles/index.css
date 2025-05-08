@@ -139,13 +139,39 @@ body {
    
 }
 .badge.easy {
-    background-color: #4CAF50; 
-  }
+    background-color: #3d5f3e; 
+    color:white;
+
+}
   
   .badge.moderate, .badge.medium {
-    background-color: #FF9800; 
+    background-color: #1f6a79; 
+    color:white;
+
   }
   
   .badge.hard {
-    background-color: #F44336; 
+    background-color: #9c251d; 
+    color:white;
+
   }
+  
+  .log-out{
+    padding: 8px 16px;
+    display:none;
+
+    background-color: #661010; 
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+
+
+
+
+
+.log-out:hover {
+    background-color: #3b0707;
+}

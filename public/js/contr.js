@@ -49,7 +49,7 @@ const formData = new FormData(form);
   
         if (response.ok) {
           alert("succes");
-          window.location.href = "/index.html";
+          window.location.href = `trail.html?id=${result.id}`;
         } else {
           alert("error: " + result.message);
         }

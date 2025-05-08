@@ -7,6 +7,21 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const loginBtn = document.querySelector(".login-btn");
     loginBtn.textContent = data.username;
+    const logoutBtn = document.querySelector(".log-out");
+if (logoutBtn) {
+  logoutBtn.style.display = "inline-block";
+  logoutBtn.addEventListener("click", async () => {
+    try {
+      const res = await fetch("/logout", { method: "POST" });
+      if (res.ok) {
+        window.location.href = "/login.html";
+      }
+    } catch (err) {
+      console.error("Logout failed", err);
+    }
+  });
+}
+
     loginBtn.onclick = null; 
     loginBtn.style.cursor = "default";
   } catch (error) {
